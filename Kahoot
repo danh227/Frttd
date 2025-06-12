@@ -15,7 +15,26 @@
         "oxi hóa",         // ví dụ: sẽ khớp với "Phản ứng oxi hóa tạo ra lửa"
         "nguồn nhiệt",     // ví dụ: sẽ khớp với "Cắt nguồn nhiệt"
         "khoảng cách",     // khớp với "Khoảng cách an toàn"
-        // ➕ Thêm từ khóa/đoạn nội dung ngắn để so sánh tại đây
+        "tất cả",
+"lắc bình, rút chốt",
+"2 lần",
+"24h",
+"0.8m",
+"nhóm 3",
+"nguồn điện, nguồn nhiệt",
+"bột 8kg, co2 5kg",
+"ngăn hóa chất tràn",
+"rửa tay, vệ sinh",
+"dán ở nơi làm việc",
+"ấn nút khi có dấu hiệu",
+"tránh hóa chất bay hơi",
+"tránh bay hơi",
+"da, thần kinh,phổi",
+"CSR",
+"MSDS",
+"A4",
+"KHU VỰC HÚT THUỐT",
+// ➕ Thêm từ khóa/đoạn nội dung ngắn để so sánh tại đây
     ];
 
     const blinkStyle = `
