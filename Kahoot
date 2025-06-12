@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Kahoot Auto Answer + Add Question UI
+// @name         Kahoot Highlight Partial Answer Match (No Auto Click)
 // @namespace    http://tampermonkey.net/
-// @version      2.0
-// @description  Tự động chọn đáp án đúng và cho phép thêm câu hỏi ngay trong trang Kahoot! 🚀🇻🇳
+// @version      1.1
+// @description  Nhấp nháy đáp án đúng nếu khớp một phần với danh sách, không tự động chọn ⚡️🇻🇳
 // @author       You
 // @match        https://kahoot.it/*
 // @grant        none
@@ -11,16 +11,12 @@
 (function () {
     'use strict';
 
-    const localKey = 'kahootAnswerDB';
-
-    let answerDB = JSON.parse(localStorage.getItem(localKey)) || {
-        "Cháy là gì?": "Phản ứng oxi hóa tạo ra lửa",
-        "Dập tắt cháy bằng cách nào?": "Cắt nguồn nhiệt"
-    };
-
-    const saveDB = () => {
-        localStorage.setItem(localKey, JSON.stringify(answerDB));
-    };
+    const answerKeywords = [
+        "oxi hóa",         // ví dụ: sẽ khớp với "Phản ứng oxi hóa tạo ra lửa"
+        "nguồn nhiệt",     // ví dụ: sẽ khớp với "Cắt nguồn nhiệt"
+        "khoảng cách",     // khớp với "Khoảng cách an toàn"
+        // ➕ Thêm từ khóa/đoạn nội dung ngắn để so sánh tại đây
+    ];
 
     const blinkStyle = `
         @keyframes blink {
@@ -31,120 +27,34 @@
         .blinking {
             animation: blink 0.6s infinite;
         }
-        #add-question-btn {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            z-index: 9999;
-            padding: 8px 12px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        #question-form {
-            position: fixed;
-            top: 50px;
-            left: 10px;
-            z-index: 9999;
-            background: white;
-            border: 2px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
-            display: none;
-            font-family: Arial;
-        }
-        #question-form input {
-            width: 250px;
-            margin-bottom: 8px;
-        }
     `;
 
     const styleSheet = document.createElement("style");
     styleSheet.innerText = blinkStyle;
     document.head.appendChild(styleSheet);
 
-    // Button UI
-    const addBtn = document.createElement("button");
-    addBtn.id = "add-question-btn";
-    addBtn.textContent = "➕ Thêm câu hỏi";
-    document.body.appendChild(addBtn);
-
-    const form = document.createElement("div");
-    form.id = "question-form";
-    form.innerHTML = `
-        <label>Câu hỏi:<br><input id="new-question" type="text"></label><br>
-        <label>Đáp án đúng:<br><input id="new-answer" type="text"></label><br>
-        <button id="save-question">💾 Lưu</button>
-    `;
-    document.body.appendChild(form);
-
-    addBtn.onclick = () => {
-        form.style.display = form.style.display === 'none' ? 'block' : 'none';
-    };
-
-    document.getElementById("save-question").onclick = () => {
-        const q = document.getElementById("new-question").value.trim();
-        const a = document.getElementById("new-answer").value.trim();
-        if (q && a) {
-            answerDB[q] = a;
-            saveDB();
-            alert("✅ Đã thêm!");
-            document.getElementById("new-question").value = "";
-            document.getElementById("new-answer").value = "";
-            form.style.display = "none";
-        }
-    };
-
     function normalize(text) {
         return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
     }
 
-    let lastQuestion = "";
-
-    function checkAndClickAnswer() {
-        const questionEl = document.querySelector('[data-functional-selector="question-text"]');
+    function highlightMatchingAnswers() {
         const answerEls = document.querySelectorAll('[data-functional-selector="answer-text"]');
 
-        if (!questionEl || answerEls.length === 0) {
-            requestAnimationFrame(checkAndClickAnswer);
-            return;
-        }
-
-        const rawQuestion = questionEl.textContent.trim();
-        if (rawQuestion === lastQuestion) {
-            requestAnimationFrame(checkAndClickAnswer);
-            return;
-        }
-
-        lastQuestion = rawQuestion;
-
-        const correctAnswer = answerDB[rawQuestion];
-        if (!correctAnswer) {
-            requestAnimationFrame(checkAndClickAnswer);
-            return;
-        }
-
-        let clicked = false;
-
         answerEls.forEach(el => {
-            const answerText = el.textContent.trim();
-            if (normalize(answerText).includes(normalize(correctAnswer))) {
-                const button = el.closest('button');
-                if (button) {
-                    button.classList.add('blinking');
-                    if (!clicked) {
-                        button.click();
-                        clicked = true;
+            const answerText = normalize(el.textContent);
+            for (const keyword of answerKeywords) {
+                if (answerText.includes(normalize(keyword))) {
+                    const btn = el.closest('button');
+                    if (btn && !btn.classList.contains('blinking')) {
+                        btn.classList.add('blinking');
                     }
+                    break;
                 }
             }
         });
 
-        requestAnimationFrame(checkAndClickAnswer);
+        requestAnimationFrame(highlightMatchingAnswers);
     }
 
-    requestAnimationFrame(checkAndClickAnswer);
+    requestAnimationFrame(highlightMatchingAnswers);
 })();
