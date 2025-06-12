@@ -12,9 +12,8 @@
     'use strict';
 
     const answerKeywords = [
-        "oxi hóa",         // ví dụ: sẽ khớp với "Phản ứng oxi hóa tạo ra lửa"
-        "nguồn nhiệt",     // ví dụ: sẽ khớp với "Cắt nguồn nhiệt"
-        "khoảng cách",     // khớp với "Khoảng cách an toàn"
+          //ví dụ: sẽ khớp với "Phản ứng oxi hóa tạo ra lửa"
+          // khớp với "Khoảng cách an toàn"
         "tất cả",
 "lắc bình, rút chốt",
 "2 lần",
@@ -34,6 +33,8 @@
 "MSDS",
 "A4",
 "KHU VỰC HÚT THUỐT",
+"các yếu tố trên",
+"khẩu trang, bao tay",
 // ➕ Thêm từ khóa/đoạn nội dung ngắn để so sánh tại đây
     ];
 
